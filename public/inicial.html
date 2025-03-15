@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Social Brasil Bank - Inicial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <style>
+        body {
+            background-color: #2c2c2c;
+            color: #ff00ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .imaegm {
+            position: absolute;
+            top: 1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+        .header button {
+            background-color: transparent;
+            border: none;
+            color: #ff00ff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .content, .payment, .pix, .receive-pix {
+            text-align: center;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: flex;
+        }
+        .payment {
+            display: none;
+        }
+        .payment.active {
+            display: flex;
+        }
+        .pix {
+            display: none;
+        }
+        .pix.active {
+            display: flex;
+        }
+        .receive-pix {
+            display: none;
+        }
+        .receive-pix.active {
+            display: flex;
+        }
+        .card {
+            background-color: #ff00ff;
+            color: #030303;
+            border-radius: 10px;
+            padding: 35px;
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            justify-content: space-between;
+        }
+        .card .logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .card p {
+            margin: 5px 5;
+        }
+        .card .user-info {
+            text-align: left;
+            vertical-align: top;
+        }
+        .saldo {
+            position: absolute;
+            top: 10px;
+            left: 2px;
+        }
+        
+        .nome {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        #pixKeySelect {
+            background-color: #ff69b4;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #pixKeySelect option {
+            background-color: #222;
+            color: #fff;
+        }
+        #newPixKeyForm {
+    display: none;  /* Escondido por padrão */
+    background-color: #FFC0CB;  /* Cor de fundo rosa brilhante */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    }
+
+    #newPixKeyForm button {
+    background-color: #4CAF50;  /* Cor do botão */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    }
+
+    #newPixKeyForm button:hover {
+    background-color: #45a049;  /* Cor do botão ao passar o mouse */
+    }
+
+    #gerarPixForm {
+            background-color: pink;
+            padding: 20px;
+            width: 300px auto;
+            border-radius: 5px;
+        }
+        
+        #gerarPixForm input, #cadastroPixForm button {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        #gerarPixForm button {
+            background-color: #ff66cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #gerarPixForm button:hover {
+            background-color: #45a049;
+        }
+        #generate-qr-button, #add-pix-key-button {
+            background-color: #ff66cc;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        #generate-qr-button:hover, #add-pix-key-button:hover {
+            background-color: #ff66cc;
+        }
+
+        .actions, .payment .actions, .pix .actions, .receive-pix .actions {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .actions button, .payment .actions button, .pix .actions button, .receive-pix .actions button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff66cc;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .qr-code {
+            width: 300px;
+            height: 300px;
+            background-color: #ff66cc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+        video {
+            width: 100%;
+            max-width: 300px;
+        }
+        .footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #ff00ff;
+        }
+        .footer button {
+            background-color: transparent;
+            border: none;
+            color: #ff00ff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer button img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #ff66cc;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .notification {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        z-index: 1000;
+        display: none;
+        border-radius: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 95%;
+            height: 95%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #2c2c2c;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 200px;
+            color: #fff;
+            border-radius: 10px;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ff00ff;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #ff00ff;
+        }
+        .modal-content button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff66cc;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .modal-content button:hover {
+            background-color: darkmagenta;
+        }
+        .extratos {
+            background-color: #pink;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            width: 100%;
+            max-width: 300px ;
+            color: #ff00ff;
+        }
+        #extratos {
+         height: 200px; /* Defina uma altura fixa para a área dos extratos */
+         overflow-y: scroll; /* Adiciona barra de rolagem vertical */
+        }
+        #extratos::-webkit-scrollbar {
+            width: 10px;
+        }
+        #extratos::-webkit-scrollbar-thumb {
+        background-color: pink; /* Cor rosa para a barra de rolagem */
+        border-radius: 10px;
+        }
+        .extrato-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .extrato-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="showContent()">$</button>
+        <button onclick="logout()">&#x2716;</button>
+    </div>
+    <div class="container">
+        <img src="logo.png" alt="Logo" class="imagem">
+    </div>
+        <div id="notification" class="notification"></div>
+        <div class="card">
+        <img src="mastercard-logo.png" alt="Mastercard Logo" class="logo" width="80">
+        <p>Nome: <span id="user-name">Usuário</span></p>
+        <p>Saldo: R$ <span id="user-balance">0,00</span></p>
+    </div>
+</div>
+        <div class="content active" id="content">
+        <div class="actions">
+            <button onclick="verExtratos()">Ver Extratos</button>
+        </div>
+        <div class="extratos" id="extratos"></div>
+    </div>
+</div>
+    <div class="payment" id="payment">
+        <div class="actions">
+        <button onclick="showPix()" style="display: block; margin: 20px 0; padding: 10px 20px; color: #fff; background-color: #ff66cc; border: none; border-radius: 5px; cursor: pointer;">Pagar Pelo Pix</button>
+        <button onclick="showReceivePix()" style="display: block; margin: 10px 0; padding: 10px 20px; color: #fff; background-color: #ff66cc; border: none; border-radius: 5px; cursor: pointer;">Receber Pelo Pix</button>
+        <div class="actions">
+        <button onclick="showPaymentForm()" style="display: block; margin: 10px 0; padding: 10px 20px; color: #fff; background-color: #ff66cc; border: none; border-radius: 5px; cursor: pointer;">Pagar Pelo ID</button>
+        <div id="paymentFormContainer" style="background-color: #ff4081; padding: 20px; border-radius: 5px; display: none;">
+            <form id="paymentForm" onsubmit="payUser(event)">
+                <label for="destinatarioId" style="color: #fff;">ID do Usuário a ser Pago:</label>
+                <input type="text" id="destinatarioId" name="destinatarioId" required style="display: block; margin-bottom: 10px; padding: 10px; width: 100%; box-sizing: border-box;">
+                <br>
+                <label for="valor" style="color: #fff;">Valor:</label>
+                <input type="number" id="valor" name="valor" required style="display: block; margin-bottom: 10px; padding: 10px; width: 100%; box-sizing: border-box;">
+                <br>
+                <button type="submit" style="display: block; margin: 10px 0; padding: 10px 20px; color: #ff4081; background-color: #000; border: none; border-radius: 5px; cursor: pointer;">Confirmar Pagamento</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+    <div class="pix" id="pix">
+        <div class="qr-code">
+            <video id="video" width="300" height="200" playsinline></video>
+        </div>
+        <div class="actions">
+            <button id="scanButton">Scan QR Code</button>
+        </div>
+    </div>
+    <p id="qrCodeResult"></p>
+    </div>
+    <div class="receive-pix" id="receive-pix">
+        <div class="qr-code">
+            <div id="qrcode"></div>
+        </div>
+        <div class="actions">
+            <h2>Social Brasil Bank <br> Gerar QR Code Pix</h2>
+    <select id="pixKeySelect">
+        <option value="">Selecione uma chave Pix</option>
+    </select>
+            <form id="gerarPixForm">
+        <label for="valor">Valor:</label>
+        <input type="text" id="valor" placeholder="Digite o valor">
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" placeholder="Digite a descrição (opcional)">
+        <button type="button" onclick="gerarQRCode()">Gerar QR Code</button>
+    </form>
+        </div>
+    </div>
+    <div class="footer">
+        <button onclick="abrirModal()">
+            <img src="config.png" alt="Config Icon">
+            Config
+        </button>
+        <button onclick="showPayment()">
+            <img src="pagar.png" alt="Pagar Icon">
+            Pagar
+        </button>
+        <button onclick="perfil()">
+            <img src="perfil.png" alt="Perfil Icon">
+            Perfil
+        </button>
+    </div>
+    <div id="modalConfig" class="modal">
+        <div class="modal-content">
+            <h2>Atualizar Informações do Perfil</h2>
+            <input type="text" id="novoNome" placeholder="Novo Nome">
+            <input type="email" id="novoEmail" placeholder="Novo Email">
+            <input type="password" id="novaSenha" placeholder="Nova Senha">
+            <button onclick="salvarConfig()">Salvar</button>
+            <button onclick="fecharModal()">Cancelar</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('user-name').textContent = user.nome;
+                document.getElementById('user-balance').textContent = user.saldo.toFixed(2);
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+        function alert(message) {
+    const notification = document.getElementById('notification');
+    notification.innerText = message;
+    notification.style.display = 'block';
+
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+    }
+       // Exemplo de como salvar o userId no local storage (normalmente feito após o login)
+localStorage.setItem('userId', '1'); // Salva o userId como string
+
+// Função para obter os extratos
+function verExtratos() {
+    const userId = localStorage.getItem('userId'); // Recupera o userId do local storage
+
+    if (userId) {
+        fetch('/extratos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log(data);
+            renderizarExtratos(data);
+        })
+        .catch(error => console.error('Erro ao buscar os extratos:', error));
+    } else {
+        console.error('ID do usuário não especificado');
+    }
+}
+
+        function renderizarExtratos(extratos) {
+    console.log('Renderizando extratos'); // Verifica se a função está sendo chamada
+    const extratosDiv = document.getElementById('extratos');
+    extratosDiv.innerHTML = ''; // Limpa a div antes de adicionar os novos extratos
+
+    extratos.forEach(extrato => {
+        const extratoItem = document.createElement('div');
+        extratoItem.classList.add('extrato-item');
+        extratoItem.innerHTML = `
+            <p>Data: ${extrato.data}</p>
+            <p>Descrição: ${extrato.descricao}</p>
+            <p>Valor: R$ ${extrato.valor.toFixed(2)}</p>
+        `;
+        extratosDiv.appendChild(extratoItem);
+    });
+}
+
+
+
+
+        function config() {
+            alert('Função de configuração ainda não implementada.');
+        }
+
+        function perfil() {
+            window.location.href = 'perfil.html'; 
+        }
+        function showPaymentForm() {
+    var paymentFormContainer = document.getElementById('paymentFormContainer');
+    paymentFormContainer.style.display = 'block';
+}
+
+function payUser(event) {
+    event.preventDefault();
+
+    var destinatarioId = document.getElementById('destinatarioId').value;
+    var valor = document.getElementById('valor').value;
+    
+    if (destinatarioId && valor) {
+        fetch('/pagar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                usuario_id: localStorage.getItem('userID'),
+                destinatario_id: destinatarioId,
+                descricao: 'Pagamento',
+                valor: parseFloat(valor)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert('Erro ao processar pagamento: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Erro ao processar pagamento: ' + error.message);
+        });
+    } else {
+    alert("Operação cancelada. Certifique-se de preencher todos os campos.");
+    }
+}
+
+        function showContent() {
+            document.getElementById('content').classList.add('active');
+            document.getElementById('payment').classList.remove('active');
+            document.getElementById('pix').classList.remove('active');
+            document.getElementById('receive-pix').classList.remove('active');
+        }
+
+        function showPayment() {
+            document.getElementById('content').classList.remove('active');
+            document.getElementById('payment').classList.add('active');
+            document.getElementById('pix').classList.remove('active');
+            document.getElementById('receive-pix').classList.remove('active');
+        }
+
+        function atualizarSaldo(usuario_id) {
+        fetch(`/saldo?usuario_id=${usuario_id}`)
+        .then(response => response.json())
+        .then(data => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            user.saldo = data.saldo;
+            localStorage.setItem('user', JSON.stringify(user));
+            document.getElementById('user-balance').textContent = user.saldo.toFixed(2);
+            document.getElementById('user-name').textContent = user.nome;
+        })
+        .catch(error => {
+            console.error('Erro ao buscar saldo atualizado:', error);
+        });
+}
+
+        function showPix() {
+            document.getElementById('content').classList.remove('active');
+            document.getElementById('payment').classList.remove('active');
+            document.getElementById('pix').classList.add('active');
+        }
+
+        function showReceivePix() {
+            document.getElementById('content').classList.remove('active');
+            document.getElementById('payment').classList.remove('active');
+            document.getElementById('pix').classList.remove('active');
+            document.getElementById('receive-pix').classList.add('active');
+        }
+        
+        document.getElementById('scanButton').addEventListener('click', function() {
+            scanQRCode();
+        });
+
+        function scanQRCode() {
+            const video = document.getElementById('video');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+                requestAnimationFrame(tick);
+            })
+            .catch(function(err) {
+                console.error("Erro ao acessar a câmera: ", err);
+                alert("Permissão para acessar a câmera foi negada.");
+            });
+
+            function tick() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert',
+                    });
+                    if (code) {
+                        displayQRCodePix(code.data);
+                    } else {
+                        requestAnimationFrame(tick);
+                    }
+                } else {
+                    requestAnimationFrame(tick);
+                }
+            }
+        }
+
+        function displayQRCodePix(data) {
+            const qrCodeResult = document.getElementById('qrCodeResult');
+            qrCodeResult.textContent = `QR Code Pix detectado: ${data}`;
+            stopVideoStream();
+        }
+
+        function stopVideoStream() {
+            const video = document.getElementById('video');
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
+        }
+
+
+
+        function abrirModal() {
+            document.getElementById('modalConfig').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalConfig').style.display = 'none';
+        }
+
+        function salvarConfig() {
+            const novoNome = document.getElementById('novoNome').value;
+            const novoEmail = document.getElementById('novoEmail').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (novoNome) {
+                document.getElementById('user-name').textContent = novoNome;
+                user.nome = novoNome;
+            }
+            if (novoEmail) {
+                user.email = novoEmail;
+            }
+            if (novaSenha) {
+                alert('Senha atualizada com sucesso!');
+            }
+
+            localStorage.setItem('user', JSON.stringify(user));
+            fecharModal();
+
+            fetch('/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: user.id, nome: novoNome, email: novoEmail, senha: novaSenha })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                alert('Erro ao atualizar informações: ' + error.message);
+            });
+        }
+        
+        let userPixKeys = [];
+
+        // Função para gerar QR Code Pix dinâmico
+        function generateDynamicQRCode(pixKey, amount, description) {
+            const qrCodeContainer = document.getElementById('qrcode');
+            qrCodeContainer.innerHTML = ''; 
+
+            const dynamicUrl = `pix.example.com/${pixKey}?amount=${amount}&description=${description}`;
+            const payload = [
+                '00', '02', '01',
+                '01', '02', '12',
+                '26', `${('0014br.gov.bcb.pix' + `25${dynamicUrl.length}${dynamicUrl}`).length}`,
+                '0014br.gov.bcb.pix',
+                `25${dynamicUrl.length}${dynamicUrl}`,
+                '52', '04', '0000',
+                '53', '03', '986',
+                '58', '02', 'BR',
+                '59', `${'Social Brasil Bank'.length}Social Brasil Bank`,
+                '60', `${'Sao Paulo'.length}Sao Paulo`,
+                '62', '07', '05', '03', '***',
+                '63', '04'
+            ].join('');
+
+            const crc = calculateCRC16(payload);
+            const fullPayload = `${payload}${crc}`;
+
+            new QRCode(qrCodeContainer, {
+                text: fullPayload,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            alert('QR Code dinâmico gerado com sucesso!');
+        }
+
+        // Função para calcular o CRC16
+        function calculateCRC16(payload) {
+            let crc = 0xFFFF;
+            const polynomial = 0x1021;
+
+            for (let i = 0; i < payload.length; i++) {
+                const byte = payload.charCodeAt(i);
+                crc ^= (byte << 8);
+
+                for (let j = 0; j < 8; j++) {
+                    if ((crc & 0x8000) !== 0) {
+                        crc = (crc << 1) ^ polynomial;
+                    } else {
+                        crc <<= 1;
+                    }
+                }
+            }
+
+            return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        // Função para gerar QR Code
+        function gerarQRCode() {
+            const select = document.getElementById('pixKeySelect');
+            const pixKey = select.value;
+            const amount = document.getElementById('valor').value;
+            const description = document.getElementById('descricao').value;
+
+            if (pixKey) {
+                generateDynamicQRCode(pixKey, amount, description);
+            } else {
+                alert("Operação cancelada. Certifique-se de selecionar uma chave Pix.");
+            }
+        }
+
+        // Função para listar as chaves Pix e preencher o dropdown
+        function listarChavesPix() {
+            const userID = localStorage.getItem('userID'); // Supondo que o ID do usuário esteja armazenado no localStorage
+            fetch('/listar-chaves-pix', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ usuario_id: userID })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da rede.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos da API:', data); // Log dos dados recebidos
+                if (data && Array.isArray(data.chavesPix)) {
+                    userPixKeys = data.chavesPix;
+                } else {
+                    userPixKeys = [];
+                }
+
+                const select = document.getElementById('pixKeySelect');
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione uma chave Pix</option>';
+                    userPixKeys.forEach(pixKey => {
+                        const option = document.createElement('option');
+                        option.value = pixKey;
+                        option.text = pixKey;
+                        select.appendChild(option);
+                    });
+                } else {
+                    console.error('Elemento pixKeySelect não encontrado.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao listar chaves Pix:', error);
+                alert('Erro ao listar chaves Pix: ' + error.message);
+            });
+        }
+
+        // Chamar a função listarChavesPix quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            listarChavesPix(); // Atualizar a lista de chaves Pix ao carregar a página
+            const qrCodeResultContainer = document.createElement('div');
+            qrCodeResultContainer.id = 'qrCodeResult';
+            document.body.appendChild(qrCodeResultContainer);
+        });
+
+    </script>
+</body>
+</html>
+

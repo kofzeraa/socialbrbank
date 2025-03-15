@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Brasil Bank - Perfil do Usuário</title>
+    <style>
+        body {
+            background-color: #2c2c2c;
+            color: #ff00ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+        .header button {
+            background-color: transparent;
+            border: none;
+            color: #ff00ff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .profile-icon img {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+        h2 {
+            margin: 20px 0;
+        }
+        .profile-info {
+            background-color: #ff00ff;
+            color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        .profile-info p {
+            margin: 10px 0;
+        }
+        .profile-info p span {
+            display: block;
+            margin-top: 5px;
+            background-color: #fff;
+            color: #000;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .actions button {
+            width: 95%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff66cc;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .actions button:hover {
+            background-color: darkmagenta;
+        }
+        .pix-section {
+            background-color: #2c2c2c;
+            color: #ff00ff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .pix-keys {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pix-keys div {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #000;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pix-keys div button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: auto; /* Posicionar o botão no canto direito */
+        }
+
+        .pix-key button:hover {
+            color: darkmagenta;
+        }
+
+        .pix-keys div img {
+            width: 20px; /* Tamanho da imagem */
+            height: 20px; /* Tamanho da imagem */
+        }
+        #newPixKeyForm {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #newPixKeyForm input, #newPixKeyForm button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #newPixKeyForm button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #newPixKeyForm button:hover {
+            background-color: #45a049;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 95%;
+            height: 95%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #2c2c2c;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 200px;
+            color: #fff;
+            border-radius: 10px;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ff00ff;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #ff00ff;
+        }
+        .modal-content button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff66cc;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .modal-content button:hover {
+            background-color: darkmagenta;
+        }
+        .extratos {
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        .extrato-item {
+            background-color: #ff66cc;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="voltarParaInicio()">$</button>
+        <button class="power-btn" onclick="logout()">&#x2716;</button>
+    </div>
+    <div class="profile-icon">
+        <img src="perfil1.png" alt="Ícone do Usuário">
+    </div>
+    <h2>Social Brasil Bank</h2>
+    <div class="profile-info">
+        <p><strong>ID:</strong> <span id="id"></span></p>
+        <p><strong>Nome:</strong> <span id="nome"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Saldo:</strong> <span id="saldo"></span></p>
+        <div class="pix-section" id="pix-section">
+        <h2>Suas Chaves Pix</h2>
+        <div id="pix-keys" class="pix-keys"></div>
+        </div>
+    </div>
+    <div id="newPixKeyForm">
+        <h2>SOCIAL BRASIL BANK</h2>
+        <p>Crie uma chave Pix nova na Social Brasil Bank</p>
+        <input type="text" id="novaChavePixInput" placeholder="Digite a nova chave Pix">
+        <button onclick="confirmarPixKey()">Confirmar</button>
+    </div>
+    <div class="actions">
+        <button class="button" onclick="mostrarFormularioPix()">Criar Nova Chave Pix</button>
+        <button onclick="abrirModal()">Configurações</button>
+        <button onclick="perfil()">Atualizar Perfil</button>
+    </div>
+
+
+    <div id="modalConfig" class="modal">
+        <div class="modal-content">
+            <h2>Atualizar Informações do Perfil</h2>
+            <input type="text" id="novoNome" placeholder="Novo Nome">
+            <input type="email" id="novoEmail" placeholder="Novo Email">
+            <input type="password" id="novaSenha" placeholder="Nova Senha">
+            <button onclick="salvarConfig()">Salvar</button>
+            <button onclick="fecharModal()">Cancelar</button>
+        </div>
+    </div>
+    
+    <script>
+        function logout() {
+            alert('Você foi desconectado.');
+            window.location.href = 'index.html'; // Redireciona para a tela de login
+        }
+
+        function voltarParaInicio() {
+            window.location.href = 'inicial.html'; // Redireciona para a página inicial
+        }
+
+        function perfil() {
+            const userID = localStorage.getItem('userID'); // Supondo que o ID do usuário esteja armazenado no localStorage
+            fetch('/perfil', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: userID })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('id').textContent = data.id;
+                document.getElementById('nome').textContent = data.nome;
+                document.getElementById('email').textContent = data.email;
+                document.getElementById('saldo').textContent = `R$ ${parseFloat(data.saldo).toFixed(2)}`;
+                listarChavesPix();  // Atualiza a lista de chaves Pix quando o perfil é carregado
+            })
+            .catch(error => {
+                alert('Erro ao buscar perfil: ' + error.message);
+            });
+        }
+
+        function abrirModal() {
+            document.getElementById('modalConfig').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalConfig').style.display = 'none';
+        }
+
+        function salvarConfig() {
+            const novoNome = document.getElementById('novoNome').value;
+            const novoEmail = document.getElementById('novoEmail').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (novoNome) {
+                document.getElementById('nome').textContent = novoNome;
+                user.nome = novoNome;
+            }
+            if (novoEmail) {
+                document.getElementById('email').textContent = novoEmail;
+                user.email = novoEmail;
+            }
+
+            fetch('/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: user.id, nome: novoNome, email: novoEmail, senha: novaSenha })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                localStorage.setItem('user', JSON.stringify(user));
+                fecharModal();
+            })
+            .catch(error => {
+                alert('Erro ao atualizar informações: ' + error.message);
+            });
+        }
+
+        let userPixKeys = [];
+
+        // Função para renderizar as chaves Pix
+        function renderPixKeys() {
+            const pixKeysContainer = document.getElementById('pix-keys');
+            if (!pixKeysContainer) {
+                console.error('Elemento com ID "pix-keys" não encontrado.');
+                return;
+            }
+            pixKeysContainer.innerHTML = '';
+
+            const uniquePixKeys = [...new Set(userPixKeys)]; // Remover duplicações
+
+            uniquePixKeys.forEach(pixKey => {
+                const pixKeyItem = document.createElement('div');
+                pixKeyItem.style.marginBottom = '10px';
+                pixKeyItem.style.display = 'flex';
+                pixKeyItem.style.alignItems = 'center';
+                pixKeyItem.className = 'pix-key';
+                pixKeyItem.innerHTML = `
+                    <span>${pixKey}</span>
+                    <button onclick="apagarChavePix('${pixKey}')">
+                        <img src="lixeira.png" alt="Apagar Chave Pix">
+                    </button>
+                `;
+                pixKeysContainer.appendChild(pixKeyItem);
+            });
+        }
+
+        // Função para apagar uma chave Pix
+        function apagarChavePix(pixKey) {
+            const userID = localStorage.getItem('userID'); // Supondo que o ID do usuário esteja armazenado no localStorage
+
+            if (pixKey && userID) {
+                fetch('/apagar-chave-pix', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usuario_id: userID, chave: pixKey })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao apagar chave Pix.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        listarChavesPix();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao apagar chave Pix: ' + error.message);
+                });
+            } else {
+                alert("Operação cancelada. Certifique-se de selecionar uma chave Pix.");
+            }
+        }
+
+// Função para mostrar o formulário de criação de nova chave Pix
+        function mostrarFormularioPix() {
+            document.getElementById('newPixKeyForm').style.display = 'block';
+        }
+
+        // Função para confirmar a nova chave Pix
+        function confirmarPixKey() {
+            const novaChave = document.getElementById('novaChavePixInput').value;
+            const userID = localStorage.getItem('userID'); // Supondo que o ID do usuário esteja armazenado no localStorage
+
+            if (novaChave && userID) {
+                console.log('Enviando dados:', { usuario_id: userID, chave: novaChave }); // Log dos dados enviados
+
+                fetch('/cadastrar-chave-pix', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usuario_id: userID, chave: novaChave })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao cadastrar chave Pix.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        listarChavesPix();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao cadastrar chave Pix: ' + error.message);
+                });
+            } else {
+                alert("Por favor, preencha a chave Pix.");
+            }
+        }
+
+        // Função para listar as chaves Pix e preencher o dropdown
+        function listarChavesPix() {
+            const userID = localStorage.getItem('userID'); // Supondo que o ID do usuário esteja armazenado no localStorage
+            fetch('/listar-chaves-pix', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ usuario_id: userID })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da rede.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos da API:', data); // Log dos dados recebidos
+                userPixKeys = data.chavesPix || [];
+                renderPixKeys();
+
+                const select = document.getElementById('pixKeySelect');
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione uma chave Pix</option>';
+                    userPixKeys.forEach(pixKey => {
+                        const option = document.createElement('option');
+                        option.value = pixKey;
+                        option.text = pixKey;
+                        select.appendChild(option);
+                    });
+                } else {
+                    console.error('Elemento pixKeySelect não encontrado.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao listar chaves Pix:', error);
+                alert('Erro ao listar chaves Pix: ' + error.message);
+            });
+        }
+
+        // Chamar a função listarChavesPix quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            listarChavesPix(); // Atualizar a lista de chaves Pix ao carregar a página
+            perfil();
+            document.getElementById('add-pix-key-button').addEventListener('click', addPixKey);
+            document.getElementById('delete-pix-key-button').addEventListener('click', apagarChavePix);
+        });
+
+    </script>
+</body>
+</html>
+

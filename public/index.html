@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Brasil Bank - Login</title>
+    <style>
+        body {
+            background-color: #2c2c2c;
+            color: #ff00ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .container h1 {
+            font-size: 4rem;
+        }
+        .container p {
+            font-size: 1.5rem;
+            margin: 20px 0;
+        }
+        .input-field {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff00ff;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .button {
+            display: block;
+            width: 220px;
+            padding: 10px;
+            margin: 10px auto;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff00ff;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>$</h1>
+        <p>Social Brasil Bank</p>
+        <input type="email" id="email" class="input-field" placeholder="Email">
+        <input type="password" id="password" class="input-field" placeholder="Senha">
+        <button class="button" onclick="login()">Login</button>
+        <button class="button" onclick="goToRegister()">Registrar</button>
+    </div>
+    <script>
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (email && password) {
+                fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, senha: password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        localStorage.setItem('user', JSON.stringify(data));
+                        window.location.href = 'inicial.html'; // Redireciona para a tela inicial após o login bem-sucedido
+                    } else {
+                        alert(data.error || 'Nome de usuário ou senha incorretos.');
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao realizar login: ' + error.message);
+                });
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+
+        function goToRegister() {
+            window.location.href = 'registro.html';
+        }
+    </script>
+</body>
+</html>
